@@ -1,0 +1,18 @@
+
+=== New Email Received at 2025-08-10T15:47:45.562Z ===
+From: "Alice" <alice@example.com>
+To: "Bob" <bob@example.com>
+Subject: Hello from Local SMTP
+Body: This is a test email from Nodemailer to our local SMTP server.
+
+==========================================
+
+
+=== New Email Received at 2025-08-10T15:48:32.989Z ===
+From: "Alice" <alice@example.com>
+To: "Bob" <bob@example.com>
+Subject: Hello from Local SMTP
+Body: This is a test email from Nodemailer to our local SMTP server.
+
+==========================================
+
