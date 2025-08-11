@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temp Mail Service</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📧 Temp Mail Service</h1>
+            <p>Generate disposable email addresses and receive emails instantly</p>
+        </div>
+
+        <div class="content">
+            <div class="email-section">
+                <h2>Generate New Email</h2>
+                <button class="btn" onclick="generateEmail()">Generate Email Address</button>
+                <div id="emailDisplay" class="email-display" style="display: none;"></div>
+                <div id="emailActions" style="display: none;">
+                    <button class="btn btn-secondary" onclick="checkEmails()">Check Emails</button>
+                    <button class="btn btn-danger" onclick="deleteAllEmails()">Delete All Emails</button>
+                </div>
+            </div>
+
+            <div id="messages"></div>
+
+            <div id="emailsContainer" class="emails-container" style="display: none;">
+                <h2>Received Emails</h2>
+                <div id="emailsList"></div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalAddresses">0</div>
+                    <div class="stat-label">Active Addresses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalEmails">0</div>
+                    <div class="stat-label">Total Emails</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

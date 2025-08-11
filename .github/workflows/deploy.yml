@@ -1,0 +1,61 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main  # Only run when code is pushed to main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AWS_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy over SSH
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
+            cd /home/ubuntu/smtp-server
+            git pull origin main
+            
+            # Check if .env file exists
+            if [ ! -f .env ]; then
+              echo "❌ .env file not found. Please create one based on env.example"
+              exit 1
+            fi
+            
+            # Create logs directory if it doesn't exist
+            mkdir -p logs
+            
+            # Install dependencies
+            npm install --production
+            
+            # Validate environment variables
+            if [ -z "$(grep '^SMTP_PASSWORD=' .env | cut -d'=' -f2)" ]; then
+              echo "❌ SMTP_PASSWORD is required in .env file"
+              exit 1
+            fi
+            
+            echo "✅ Environment validation passed"
+            
+            # Restart with PM2 ecosystem config
+            pm2 restart ecosystem.config.js --env production || pm2 start ecosystem.config.js --env production
+            
+            # Save PM2 configuration
+            pm2 save
+            
+            # Setup PM2 to start on system boot (only if not already set)
+            pm2 startup | grep -q "already inited" || pm2 startup
+            
+            echo "✅ SMTP Server deployed successfully!"
+            echo "📧 SMTP Server running on port: $(grep '^SMTP_PORT=' .env | cut -d'=' -f2 || echo '2525')"
+            echo "🌐 HTTP Server running on port: $(grep '^HTTP_PORT=' .env | cut -d'=' -f2 || echo '3001')"
+          EOF
