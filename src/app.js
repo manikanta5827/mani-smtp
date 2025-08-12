@@ -53,23 +53,6 @@ app.get('/', async (req, res) => {
   }
 });
 
-// Legacy endpoint for backward compatibility
-app.get('/emails', async (req, res) => {
-  try {
-    const content = await fs.readFile(config.emailLogFile, 'utf8');
-    res.set('Content-Type', 'text/plain; charset=utf-8');
-    res.send(content);
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      res.set('Content-Type', 'text/plain; charset=utf-8');
-      res.send('No emails received yet.');
-    } else {
-      console.error('Error reading email log:', error);
-      res.status(500).send('Error reading email log file');
-    }
-  }
-});
-
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ error: 'Not Found' });

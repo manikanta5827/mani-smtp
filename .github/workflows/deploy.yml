@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Set up SSH key
         run: |
@@ -23,7 +23,7 @@ jobs:
       - name: Deploy over SSH
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
-            cd /home/ubuntu/smtp-server
+            cd /home/ubuntu/work/mani-smtp
             git pull origin main
             
             # Check if .env file exists
@@ -38,12 +38,6 @@ jobs:
             # Install dependencies
             npm install --production
             
-            # Validate environment variables
-            if [ -z "$(grep '^SMTP_PASSWORD=' .env | cut -d'=' -f2)" ]; then
-              echo "❌ SMTP_PASSWORD is required in .env file"
-              exit 1
-            fi
-            
             echo "✅ Environment validation passed"
             
             # Restart with PM2 ecosystem config
@@ -57,5 +51,5 @@ jobs:
             
             echo "✅ SMTP Server deployed successfully!"
             echo "📧 SMTP Server running on port: $(grep '^SMTP_PORT=' .env | cut -d'=' -f2 || echo '2525')"
-            echo "🌐 HTTP Server running on port: $(grep '^HTTP_PORT=' .env | cut -d'=' -f2 || echo '3001')"
+            echo "🌐 HTTP Server running on port: $(grep '^PORT=' .env | cut -d'=' -f2 || echo '3000')"
           EOF

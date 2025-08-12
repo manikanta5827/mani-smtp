@@ -1,37 +1,30 @@
-const config = require('./config/config');
 const app = require('./app');
-const SMTPServerService = require('./services/smtpServer');
-const TempMailService = require('./services/temp-mail-service');
+const SMTPServerService = require('./services/smtp-server-service');
+const config = require('./config/config');
 
-// Initialize services
-const tempMailService = new TempMailService();
-const smtpServer = new SMTPServerService(tempMailService);
+// Create SMTP server instance
+const smtpServer = new SMTPServerService();
 
 // Start SMTP server
 smtpServer.start();
 
-// Start Express server
-const server = app.listen(config.httpPort, "0.0.0.0", () => {
-  console.log(`HTTP server running on port ${config.httpPort}`);
-  console.log(`Web interface: http://localhost:${config.httpPort}`);
-  console.log(`API endpoints: http://localhost:${config.httpPort}/api`);
+// Start HTTP server
+const PORT = config.port || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 HTTP server running on port ${PORT}`);
+  console.log(`📧 SMTP server running on port ${config.smtpPort}`);
+  console.log(`🌍 Environment: ${config.nodeEnv}`);
 });
 
 // Graceful shutdown
-const shutdown = (signal) => {
-  console.log(`\nReceived ${signal}, shutting down gracefully...`);
-  
-  server.close(() => {
-    console.log('HTTP server closed');
-  });
-  
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
   smtpServer.stop();
-  
-  setTimeout(() => {
-    console.log('Process terminated');
-    process.exit(0);
-  }, 1000);
-};
+  process.exit(0);
+});
 
-process.on('SIGTERM', () => shutdown('SIGTERM'));
-process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  smtpServer.stop();
+  process.exit(0);
+});

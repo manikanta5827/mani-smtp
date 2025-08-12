@@ -12,8 +12,7 @@ module.exports = {
     env_production: {
       NODE_ENV: 'production',
       SMTP_PORT: 2525,
-      HTTP_PORT: 3001,
-      SMTP_PASSWORD: process.env.SMTP_PASSWORD,
+      PORT: 3000,
       ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
       TEMP_MAIL_DOMAIN: process.env.TEMP_MAIL_DOMAIN
     },
